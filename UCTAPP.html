@@ -1,0 +1,642 @@
+<html><head><base href="https://ashleigh's/uct-shuttle-app/">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>UCT Shuttle App</title>
+<style>
+    :root {
+        --dark-blue: #003366;
+        --light-blue: #009FE3;
+        --white: #FFFFFF;
+    }
+
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: 'Roboto', sans-serif;
+    }
+
+    body {
+        background-color: var(--white);
+    }
+
+    .app-container {
+        max-width: 414px;
+        margin: 0 auto;
+        background-color: #ffffff;
+        min-height: 100vh;
+        position: relative;
+        overflow: hidden;
+    }
+
+    header {
+        background-color: var(--dark-blue);
+        color: white;
+        padding: 1rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .logo-title {
+        display: flex;
+        align-items: center;
+    }
+
+    .uct-logo {
+        width: 40px;
+        height: 40px;
+        margin-right: 10px;
+    }
+
+    h1 {
+        font-size: 1.5rem;
+    }
+
+    .header-buttons {
+        display: flex;
+    }
+
+    .header-btn {
+        background: none;
+        border: none;
+        color: white;
+        font-size: 1.2rem;
+        margin-left: 1rem;
+        cursor: pointer;
+        transition: transform 0.3s ease;
+    }
+
+    .header-btn:hover {
+        transform: scale(1.1);
+    }
+
+    .search-bar {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        padding: 1rem;
+        background-color: var(--dark-blue);
+        transform: translateY(-100%);
+        transition: transform 0.3s ease;
+    }
+
+    .search-bar.active {
+        transform: translateY(0);
+    }
+
+    .search-input {
+        width: 100%;
+        padding: 0.5rem;
+        border: none;
+        border-radius: 5px;
+    }
+
+    .side-menu {
+        position: absolute;
+        top: 0;
+        right: 0;
+        width: 70%;
+        height: 100%;
+        background-color: #ffffff;
+        box-shadow: -2px 0 5px rgba(0, 0, 0, 0.1);
+        transform: translateX(100%);
+        transition: transform 0.3s ease;
+    }
+
+    .side-menu.active {
+        transform: translateX(0);
+    }
+
+    .menu-item {
+        padding: 1rem;
+        display: block;
+        color: var(--dark-blue);
+        text-decoration: none;
+    }
+
+    .menu-item:hover {
+        background-color: #f0f0f0;
+    }
+
+    .bottom-nav {
+        position: fixed;
+        bottom: 0;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 100%;
+        max-width: 414px;
+        background-color: #ffffff;
+        display: flex;
+        justify-content: space-around;
+        padding: 0.5rem 0;
+        box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.1);
+    }
+
+    .nav-btn {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        color: var(--dark-blue);
+        text-decoration: none;
+        transition: all 0.3s ease;
+    }
+
+    .nav-btn.active {
+        transform: scale(1.1);
+        color: var(--light-blue);
+    }
+
+    .nav-btn i {
+        font-size: 1.5rem;
+        margin-bottom: 0.2rem;
+    }
+
+    .nav-btn span {
+        font-size: 0.8rem;
+    }
+
+    .content {
+        padding: 1rem;
+        padding-bottom: 4rem;
+    }
+
+    .favorite-routes {
+        margin-top: 1rem;
+    }
+
+    .route-card {
+        background-color: #ffffff;
+        border-radius: 10px;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        padding: 1rem;
+        margin-bottom: 1rem;
+        animation: slideIn 0.5s ease;
+        transition: transform 0.3s ease;
+    }
+
+    .route-card:hover {
+        transform: translateY(-5px);
+    }
+
+    @keyframes slideIn {
+        from {
+            opacity: 0;
+            transform: translateY(50px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .route-name {
+        font-weight: bold;
+        margin-bottom: 0.5rem;
+    }
+
+    .route-info {
+        display: flex;
+        justify-content: space-between;
+        font-size: 0.9rem;
+    }
+
+    .tracking-tab, .schedule-tab, .alerts-tab {
+        display: none;
+    }
+
+    .dropdown {
+        width: 100%;
+        padding: 0.5rem;
+        margin-bottom: 1rem;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+    }
+
+    .map-container {
+        width: 100%;
+        height: 300px;
+        margin-bottom: 1rem;
+        border-radius: 10px;
+        overflow: hidden;
+    }
+
+    #map {
+        width: 100%;
+        height: 100%;
+    }
+
+    .shuttle-marker {
+        width: 20px;
+        height: 20px;
+        background-color: var(--dark-blue);
+        border-radius: 50%;
+        position: absolute;
+        transition: all 0.5s ease;
+    }
+
+    .progress-bar {
+        width: 100%;
+        height: 10px;
+        background-color: #e5e5e5;
+        border-radius: 5px;
+        margin-top: 1rem;
+        overflow: hidden;
+    }
+
+    .progress {
+        width: 0;
+        height: 100%;
+        background-color: var(--dark-blue);
+        transition: width 0.5s ease;
+    }
+
+    .schedule-item {
+        background-color: #ffffff;
+        border-radius: 10px;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        padding: 1rem;
+        margin-bottom: 1rem;
+        animation: fadeInBounce 0.5s ease;
+    }
+
+    @keyframes fadeInBounce {
+        0% {
+            opacity: 0;
+            transform: scale(0.8);
+        }
+        50% {
+            transform: scale(1.05);
+        }
+        100% {
+            opacity: 1;
+            transform: scale(1);
+        }
+    }
+
+    .next-stop-info {
+        background-color: #ffffff;
+        border-radius: 10px;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        padding: 1rem;
+        margin-top: 1rem;
+    }
+
+    #schedule-form {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+        margin-bottom: 1rem;
+    }
+
+    #add-to-schedule {
+        background-color: var(--dark-blue);
+        color: white;
+        border: none;
+        padding: 0.5rem;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+    }
+
+    #add-to-schedule:hover {
+        background-color: var(--light-blue);
+    }
+
+    #view-schedule {
+        background-color: var(--light-blue);
+        color: white;
+        border: none;
+        padding: 0.5rem;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+    }
+
+    #view-schedule:hover {
+        background-color: var(--dark-blue);
+    }
+
+    .alert-item {
+        background-color: #ffffff;
+        border-radius: 10px;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        padding: 1rem;
+        margin-bottom: 1rem;
+        cursor: pointer;
+        transition: transform 0.3s ease;
+    }
+
+    .alert-item:hover {
+        transform: translateY(-5px);
+    }
+</style>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+</head>
+<body>
+<div class="app-container">
+    <header>
+        <div class="logo-title">
+            <svg class="uct-logo" viewBox="0 0 100 100">
+                <circle cx="50" cy="50" r="45" fill="var(--dark-blue)"/>
+                <text x="50" y="55" font-size="40" text-anchor="middle" fill="white">UCT</text>
+            </svg>
+            <h1>UCT Shuttle</h1>
+        </div>
+        <div class="header-buttons">
+            <button class="header-btn search-btn"><i class="fas fa-search"></i></button>
+            <button class="header-btn menu-btn"><i class="fas fa-bars"></i></button>
+        </div>
+    </header>
+
+    <div class="search-bar">
+        <input type="text" class="search-input" placeholder="Search routes...">
+    </div>
+
+    <div class="side-menu">
+        <a href="#profile" class="menu-item">Profile</a>
+        <a href="#logout" class="menu-item">Logout</a>
+        <a href="#language" class="menu-item">Change Language</a>
+    </div>
+
+    <div class="content">
+        <div class="home-tab">
+            <h2>Favorite Routes</h2>
+            <div class="favorite-routes">
+                <div class="route-card">
+                    <div class="route-name">Claremont - Upper Campus</div>
+                    <div class="route-info">
+                        <span>Next: 10:15 AM</span>
+                        <span>Status: On Time</span>
+                    </div>
+                </div>
+                <div class="route-card">
+                    <div class="route-name">Forest Hill - Upper Campus</div>
+                    <div class="route-info">
+                        <span>Next: 10:20 AM</span>
+                        <span>Status: 5 min delay</span>
+                    </div>
+                </div>
+                <div class="route-card">
+                    <div class="route-name">Tugwell - Upper Campus</div>
+                    <div class="route-info">
+                        <span>Next: 10:25 AM</span>
+                        <span>Status: On Time</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="tracking-tab">
+            <select class="dropdown" id="location-dropdown">
+                <option value="">Select a location</option>
+                <option value="claremont">Claremont</option>
+                <option value="bremner-kramer">Bremner-Kramer</option>
+                <option value="forest-hill">Forest Hill</option>
+            </select>
+            <div class="map-container">
+                <div id="map"></div>
+            </div>
+            <div class="next-stop-info" style="display: none;">
+                <h3>Next Stop: <span id="next-stop-name">Upper Campus</span></h3>
+                <p>Estimated arrival: <span id="estimated-arrival">3 minutes</span></p>
+                <div class="progress-bar">
+                    <div class="progress" id="arrival-progress"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="schedule-tab">
+            <h2>Personalized Schedule</h2>
+            <form id="schedule-form">
+                <select id="day-selector">
+                    <option value="">Select day</option>
+                    <option value="monday">Monday</option>
+                    <option value="tuesday">Tuesday</option>
+                    <!-- Add more days -->
+                </select>
+                <input type="time" id="time-selector">
+                <select id="pickup-selector">
+                    <option value="">Select pickup location</option>
+                    <option value="claremont">Claremont</option>
+                    <option value="bremner-kramer">Bremner-Kramer</option>
+                    <!-- Add more locations -->
+                </select>
+                <select id="dropoff-selector">
+                    <option value="">Select drop-off location</option>
+                    <option value="upper-campus">Upper Campus</option>
+                    <option value="lower-campus">Lower Campus</option>
+                    <!-- Add more locations -->
+                </select>
+                <button type="submit" id="add-to-schedule">Add to Schedule</button>
+            </form>
+            <button id="view-schedule">View Schedule for Stop</button>
+            <div id="user-schedule">
+                <!-- Scheduled routes will be dynamically added here -->
+            </div>
+        </div>
+
+        <div class="alerts-tab">
+            <div id="alerts-list">
+                <!-- Alerts will be dynamically added here -->
+            </div>
+        </div>
+    </div>
+
+    <nav class="bottom-nav">
+        <a href="#home" class="nav-btn active">
+            <i class="fas fa-map-pin"></i>
+            <span>Home</span>
+        </a>
+        <a href="#track" class="nav-btn">
+            <i class="fas fa-compass"></i>
+            <span>Track</span>
+        </a>
+        <a href="#schedule" class="nav-btn">
+            <i class="fas fa-calendar"></i>
+            <span>Schedule</span>
+        </a>
+        <a href="#alerts" class="nav-btn">
+            <i class="fas fa-bell"></i>
+            <span>Alerts</span>
+        </a>
+    </nav>
+</div>
+
+<script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const searchBtn = document.querySelector('.search-btn');
+    const menuBtn = document.querySelector('.menu-btn');
+    const searchBar = document.querySelector('.search-bar');
+    const sideMenu = document.querySelector('.side-menu');
+    const navBtns = document.querySelectorAll('.nav-btn');
+    const homeTab = document.querySelector('.home-tab');
+    const trackingTab = document.querySelector('.tracking-tab');
+    const scheduleTab = document.querySelector('.schedule-tab');
+    const alertsTab = document.querySelector('.alerts-tab');
+    const progressBar = document.querySelector('.progress');
+    const arrivalProgress = document.getElementById('arrival-progress');
+    const nextStopName = document.getElementById('next-stop-name');
+    const estimatedArrival = document.getElementById('estimated-arrival');
+    const scheduleForm = document.getElementById('schedule-form');
+    const userSchedule = document.getElementById('user-schedule');
+    const alertsList = document.getElementById('alerts-list');
+
+    const locationDropdown = document.getElementById('location-dropdown');
+    locationDropdown.addEventListener('change', function() {
+        const selectedLocation = this.value;
+        if (selectedLocation) {
+            document.querySelector('.next-stop-info').style.display = 'block';
+            // Update map view and next stop info based on selected location
+        } else {
+            document.querySelector('.next-stop-info').style.display = 'none';
+        }
+    });
+
+    let map, shuttleMarker;
+
+    searchBtn.addEventListener('click', () => {
+        searchBar.classList.toggle('active');
+    });
+
+    menuBtn.addEventListener('click', () => {
+        sideMenu.classList.toggle('active');
+    });
+
+    document.addEventListener('click', function(event) {
+        if (!sideMenu.contains(event.target) && !menuBtn.contains(event.target)) {
+            sideMenu.classList.remove('active');
+        }
+    });
+
+    navBtns.forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            e.preventDefault();
+            navBtns.forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+
+            const tabName = btn.getAttribute('href').substring(1);
+            showTab(tabName);
+        });
+    });
+
+    function initMap() {
+        map = L.map('map').setView([-33.9569, 18.4611], 13);
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; OpenStreetMap contributors'
+        }).addTo(map);
+        shuttleMarker = L.marker([-33.9569, 18.4611]).addTo(map);
+    }
+
+    function animateShuttle() {
+        let position = 0;
+        const route = [
+            [-33.9569, 18.4611],
+            [-33.9570, 18.4650],
+            [-33.9580, 18.4670],
+            [-33.9590, 18.4690],
+            [-33.9600, 18.4710]
+        ];
+
+        setInterval(() => {
+            position = (position + 1) % route.length;
+            const newPos = route[position];
+            shuttleMarker.setLatLng(newPos);
+            map.panTo(newPos);
+            arrivalProgress.style.width = `${(position / (route.length - 1)) * 100}%`;
+        }, 2000);
+    }
+
+    function showTab(tabName) {
+        homeTab.style.display = 'none';
+        trackingTab.style.display = 'none';
+        scheduleTab.style.display = 'none';
+        alertsTab.style.display = 'none';
+
+        switch(tabName) {
+            case 'home':
+                homeTab.style.display = 'block';
+                break;
+            case 'track':
+                trackingTab.style.display = 'block';
+                if (!map) {
+                    initMap();
+                }
+                animateShuttle();
+                break;
+            case 'schedule':
+                scheduleTab.style.display = 'block';
+                loadUserSchedule();
+                break;
+            case 'alerts':
+                alertsTab.style.display = 'block';
+                loadAlerts();
+                break;
+        }
+    }
+
+    function loadUserSchedule() {
+        userSchedule.innerHTML = '';
+    }
+
+    function loadAlerts() {
+        const mockAlerts = [
+            { title: 'Delay on Claremont Route', description: 'The next shuttle on the Claremont route will be 15 minutes late.', time: '10:30 AM' },
+            { title: 'Route Change', description: 'Temporary route change due to road construction on Main Road.', time: '9:45 AM' },
+            { title: 'New Shuttle Added', description: 'Additional shuttle added to the Upper Campus route during peak hours.', time: '8:15 AM' }
+        ];
+
+        alertsList.innerHTML = '';
+        mockAlerts.forEach(alert => {
+            const alertItem = document.createElement('div');
+            alertItem.className = 'alert-item';
+            alertItem.innerHTML = `
+                <h3>${alert.title}</h3>
+                <p>${alert.description}</p>
+                <small>${alert.time}</small>
+            `;
+            alertsList.appendChild(alertItem);
+        });
+    }
+
+    scheduleForm.addEventListener('submit', function(e) {
+        e.preventDefault();
+        const day = document.getElementById('day-selector').value;
+        const time = document.getElementById('time-selector').value;
+        const pickup = document.getElementById('pickup-selector').value;
+        const dropoff = document.getElementById('dropoff-selector').value;
+        addToSchedule(day, time, pickup, dropoff);
+    });
+
+    function addToSchedule(day, time, pickup, dropoff) {
+        const scheduleItem = document.createElement('div');
+        scheduleItem.className = 'schedule-item';
+        scheduleItem.innerHTML = `
+            <p>${day} ${time} - Pickup: ${pickup}, Drop-off: ${dropoff}</p>
+            <button class="remove-btn">Remove</button>
+        `;
+        userSchedule.appendChild(scheduleItem);
+    }
+
+    document.getElementById('view-schedule').addEventListener('click', function() {
+        const stopSchedule = [
+            { time: '08:00', route: 'Claremont - Upper Campus' },
+            { time: '08:30', route: 'Bremner-Kramer - Upper Campus' },
+            { time: '09:00', route: 'Claremont - Upper Campus' },
+            { time: '09:30', route: 'Forest Hill - Upper Campus' }
+        ];
+
+        let scheduleHTML = '<h3>Schedule for Selected Stop</h3>';
+        stopSchedule.forEach(item => {
+            scheduleHTML += `<p>${item.time} - ${item.route}</p>`;
+        });
+
+        document.getElementById('stop-schedule').innerHTML = scheduleHTML;
+    });
+});
+</script>
+</body>
+</html>
